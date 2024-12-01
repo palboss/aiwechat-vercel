@@ -1,18 +1,15 @@
 name: Docker Image CI
 
-# 触发条件
 on:
   push:
-    branches: [ "main" ]
-    # 当特定路径下文件变更时触发
-    paths:
-      - '**.go'
-      - 'go.mod'
-      - 'go.sum'
-      - 'Dockerfile'
-  
-  # 允许手动触发工作流
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
   workflow_dispatch:
+
+env:
+  GHCR_REPO: ghcr.io/palboss/aiwechat-vercel
 
 # 定义工作流的作业
 jobs:
