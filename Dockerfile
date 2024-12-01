@@ -1,10 +1,13 @@
-# 使用官方Golang基础镜像
+# 使用官方 Golang 1.21 Alpine 基础镜像
 FROM golang:1.21-alpine AS builder
 
 # 设置工作目录
 WORKDIR /app
 
-# 复制go模块依赖文件
+# 安装必要的系统依赖（可选）
+RUN apk add --no-cache git gcc musl-dev
+
+# 复制 go 模块依赖文件
 COPY go.mod go.sum ./
 
 # 下载依赖
@@ -13,12 +16,15 @@ RUN go mod download
 # 复制源代码
 COPY . .
 
-# 构建应用
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+# 构建应用（添加更详细的构建参数）
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -ldflags="-w -s" \
+    -o main .
 
 # 使用轻量级基础镜像
-FROM alpine:latest  
+FROM alpine:latest
 
+# 设置工作目录
 WORKDIR /root/
 
 # 复制构建的二进制文件
