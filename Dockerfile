@@ -17,7 +17,7 @@ RUN go mod download
 COPY . .
 
 # 构建应用（添加更详细的构建参数）
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+RUN go build \
     -ldflags="-w -s" \
     -o main .
 
