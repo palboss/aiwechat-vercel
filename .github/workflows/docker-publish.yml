@@ -1,56 +1,52 @@
-name: Docker Image CI
+name: 构建并推送Docker镜像
+
+permissions: write-all        
 
 on:
   push:
     branches:
       - main
-    paths-ignore:
-      - 'README.md'
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
-env:
-  GHCR_REPO: ghcr.io/palboss/aiwechat-vercel
-
-# 定义工作流的作业
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
-    
-    # 定义步骤
+
     steps:
-      # 检出代码
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      # 设置Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      
-      # 登录Docker Hub
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Go环境
+        uses: actions/setup-go@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      # 提取元数据
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v4
+          go-version: 1.21
+
+      - name: 整理Go模块
+        run: go mod tidy
+
+      - name: 登录到GitHub容器注册表
+        uses: docker/login-action@v3
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/wchatLLM
-          tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=sha
-      
-      # 构建并推送镜像
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 设置小写的用户名和仓库名称
+        run: |
+          REPO_FULL_NAME=${{ github.repository }}
+          REPO_OWNER=$(echo "${REPO_FULL_NAME}" | cut -d'/' -f1 | tr '[:upper:]' '[:lower:]')
+          REPO_NAME=$(echo "${REPO_FULL_NAME}" | cut -d'/' -f2 | tr '[:upper:]' '[:lower:]')
+          echo "REPO_NAME_LOWER=${REPO_OWNER}/${REPO_NAME}" >> $GITHUB_ENV
+
+      - name: 构建Docker镜像
+        run: |
+          docker build . -t ghcr.io/$REPO_NAME_LOWER:latest
+        shell: bash
+
+      - name: 推送Docker镜像
+        run: |
+          docker push ghcr.io/$REPO_NAME_LOWER:latest
+        shell: bash
