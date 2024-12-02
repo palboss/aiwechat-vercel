@@ -1,6 +1,8 @@
 FROM golang:1.21 AS builder
 
-ENV CGO_ENABLED=0
+ENV GO111MODULE=on \
+    CGO_ENABLED=1 \
+    GOOS=linux
 
 WORKDIR /app
 
