@@ -20,6 +20,8 @@ WORKDIR /app
 
 COPY --from=builder /app/wchatLLM /app/wchatLLM
 
+RUN chmod +x /app/wchatLLM
+
 EXPOSE 8080
 
 CMD ["/app/wchatLLM"]
