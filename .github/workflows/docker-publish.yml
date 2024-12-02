@@ -19,10 +19,6 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: Save version info
-        run: |
-          git describe --tags > VERSION 
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
