@@ -48,17 +48,18 @@ jobs:
           REPO_NAME=$(echo "${REPO_FULL_NAME}" | cut -d'/' -f2 | tr '[:upper:]' '[:lower:]')
           echo "REPO_NAME_LOWER=${REPO_OWNER}/${REPO_NAME}" >> $GITHUB_ENV
 
-      - name: 构建Docker镜像
-        run: |
-          docker build . -t ghcr.io/$REPO_NAME_LOWER:latest -t ${{ secrets.DOCKERHUB_USERNAME }}/$REPO_NAME:latest
-        shell: bash
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            borland99/wxchatLLM
+            ghcr.io/${{ github.repository }}
 
-      - name: 推送到GitHub Container Registry
-        run: |
-          docker push ghcr.io/$REPO_NAME_LOWER:latest
-        shell: bash
-
-      - name: 推送到Docker Hub
-        run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/$REPO_NAME:latest
-        shell: bash
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
