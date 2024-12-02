@@ -39,7 +39,7 @@ jobs:
         with:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: 设置小写的用户名和仓库名称
         run: |
