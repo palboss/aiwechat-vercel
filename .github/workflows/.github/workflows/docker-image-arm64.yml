@@ -14,7 +14,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    permissions:
+      packages: write
+      contents: read
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -59,13 +61,14 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            borland99/wxchatLLM
+            borland99/wxchatllm
             ghcr.io/${{ github.repository }}
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v3
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
