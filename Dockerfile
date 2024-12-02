@@ -14,7 +14,7 @@ COPY . .
 
 RUN go build -ldflags "-s -w" -o /app/wchatLLM ./api
 
-FROM alpine:latest
+FROM alpine
 
 WORKDIR /app
 
