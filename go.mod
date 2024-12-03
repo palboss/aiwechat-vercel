@@ -1,6 +1,6 @@
 module github.com/pwh-pwh/aiwechat-vercel
 
-go 1.21
+go 1.23.3
 
 require (
 	github.com/bytedance/sonic v1.11.2
