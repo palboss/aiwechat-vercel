@@ -1,29 +1,34 @@
-FROM golang:1.21 AS builder
-
+FROM golang:1.23.3-alpine3.20 AS builder
+# docker run -dit --name wechat -v C:\Users\zen\Github\aiwechat-vercel:/data golang:1.23.3-alpine3.20 ash
 ENV GO111MODULE=on \
-    CGO_ENABLED=1 \
-    GOOS=linux
+    CGO_ENABLED=1 
 
-WORKDIR /app
+RUN apk update
 
-COPY go.mod go.sum ./
+RUN apk add build-base
 
-RUN go mod tidy
+RUN mkdir /data
 
-RUN go mod download
+WORKDIR /data
 
 COPY . .
 
-RUN go build -ldflags "-s -w" -o /app/wchatLLM ./api
+RUN go mod tidy
 
-FROM alpine
 
+RUN go build -ldflags "-s -w" -o /data/wchatLLM ./api
+
+FROM alpine:3.20
+
+RUN mkdir /app
 WORKDIR /app
 
-COPY --from=builder /app/wchatLLM /app/wchatLLM
+COPY --from=builder /data/wchatLLM /usr/local/bin/wchatLLM
 
-RUN chmod -R 777 /app
+
+RUN chmod +x /usr/local/bin/wchatLLM
+
 
 EXPOSE 8080
 
-CMD ["/app/wchatLLM"]
+ENTRYPOINT  ["/usr/local/bin/wchatLLM"]
