@@ -25,7 +25,9 @@ WORKDIR /app
 
 COPY --from=builder /data/wchatLLM /usr/local/bin/wchatLLM
 
+
 RUN chmod +x /usr/local/bin/wchatLLM
+
 
 EXPOSE 8080
 
