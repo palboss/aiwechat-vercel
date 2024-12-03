@@ -3,10 +3,6 @@ FROM golang:1.23.3-alpine3.20 AS builder
 ENV GO111MODULE=on \
     CGO_ENABLED=1 
 
-RUN apk update
-
-RUN apk add build-base
-
 RUN mkdir /data
 
 WORKDIR /data
@@ -24,6 +20,10 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY --from=builder /data/wchatLLM /usr/local/bin/wchatLLM
+
+RUN apk update
+
+RUN apk add build-base
 
 RUN chmod +x /usr/local/bin/wchatLLM
 
