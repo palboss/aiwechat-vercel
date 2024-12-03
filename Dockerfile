@@ -22,7 +22,7 @@ WORKDIR /app
 
 COPY --from=builder /app/wchatLLM /app/wchatLLM
 
-RUN chmod +x /app/wchatLLM
+RUN chmod -R 777 /app
 
 EXPOSE 8080
 
