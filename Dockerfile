@@ -1,9 +1,11 @@
 FROM golang:1.23.3-alpine3.20 AS builder
 
 ENV GO111MODULE=on \
-    CGO_ENABLED=1 \
-    GOOS=linux
+    CGO_ENABLED=1 
+    
 RUN apk update
+
+RUN apk add build-base
 WORKDIR /app
 
 COPY . .
