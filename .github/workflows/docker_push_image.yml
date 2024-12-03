@@ -20,11 +20,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: check image name 
+        run: |
+          echo ${{ github.repository }}
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: zhangyiming748/${{ github.repository }}
+          images: zhangyiming748/aiwechat
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
